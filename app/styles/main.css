@@ -1,0 +1,15 @@
+a.clear-filter {
+    visibility: hidden;
+}
+
+a.clear-filter.display {
+    visibility: visible;
+}
+
+a.clear-all-filters {
+    visibility: hidden;
+}
+
+a.clear-all-filters.display {
+    visibility: visible;
+}
