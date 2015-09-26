@@ -7,14 +7,21 @@ var FilterView = Backbone.View.extend({
         'click .clear-filter': 'clearAllChecked'
     },
 
+    // render: function(){
+    //  var template = _.template($('#dumb').html());
+    //     var vars = {amount:200};
+    //     var html = template(vars);
+    //     this.$el.append(html);
+    // },
+
     render: function () {
 
-        this.$el.append(FilterTemplate(this.model.toJSON()))
+        this.$el.append(FilterTemplate(this.model.toJSON()));
 
         var values = this.model.get('values');
 
         _.each(values, function (value) {
-            this.$('.list').append('<li><input type="checkbox" id=' + value.id + '/><label for=' + value.id + '> ' + value.value + '</label></li>');
+            this.$('.list').append('<li><input type="checkbox" id=' + value.id + '><label for=' + value.id + '> ' + value.value + '</label></li>');
         }, this);
 
         return this;
@@ -36,6 +43,15 @@ var FilterView = Backbone.View.extend({
 
     clearAllChecked: function () {
         var checked = this.$el.find(':checked').attr('checked', false);
+        this.toggleClearButton();
+    },
+
+    updateFacet: function (values) {
+        _.each(values, function (value) {
+            var id = '#' + this.model.get('panelValue') + value;
+            $(id).attr('checked', true)
+        }, this);
+
         this.toggleClearButton();
     }
 

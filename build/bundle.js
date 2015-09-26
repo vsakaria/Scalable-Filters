@@ -26,44 +26,49 @@ var FilterController = {
         this.brandView();
         this.colourView();
 
-        if(window.location.search) {
-            this.handleQueryString();
+        if (window.location.search) {
+            this.handleQueryString(window.location.search);
         }
     },
 
-    handleQueryString: function () {
-        var refinements = location.search.slice(8).split('|');
+    handleQueryString: function (queryString) {
+        var refinements = queryString.slice(8).split('|');
 
-        $.each(refinements, function (i, panelData) {
-
+        _.each(refinements, function (panelData) {
             var panelName = panelData.split(':')[0];
-
             var panelValues = panelData.split(':')[1].split(',');
 
             if (panelName == 'size') {
-                var refinementValues = $('[data-id=size] [type=checkbox]');
 
-                $.each(panelValues, function (i, val) {
-                    refinementValues.eq((val - 3) / 2).attr('checked', true).change();
-                });
+                this.sizeView.updateFacet(panelValues);
+
+                // var refinementValues = $('[data-id=size] [type=checkbox]');
+
+                // $.each(panelValues, function (i, val) {
+                //     refinementValues.eq((val - 3) / 2).attr('checked', true).change();
+                // });
 
             } else if (panelName == 'colour') {
-                var refinementValues = $('[data-id=base_colour] [type=checkbox]');
+                this.colourView.updateFacet(panelValues);
 
-                $.each(panelValues, function (i, val) {
-                    refinementValues.eq(val).attr('checked', true).change();
-                });
+                // var refinementValues = $('[data-id=base_colour] [type=checkbox]');
 
-            } else {
-                var refinementValues = $('[data-id=brand] [type=checkbox]');
+                // $.each(panelValues, function (i, val) {
+                //     refinementValues.eq(val).attr('checked', true).change();
+                // });
 
-                $.each(panelValues, function (i, val) {
-                    refinementValues.filter('#brand_' + val).attr('checked', true).change();
-                });
+            } else if (panelName === 'brand') {
+                this.brandView.updateFacet(panelValues);
+
+                // var refinementValues = $('[data-id=brand] [type=checkbox]');
+
+                // $.each(panelValues, function (i, val) {
+                //     refinementValues.filter('#brand_' + val).attr('checked', true).change();
+                // });
 
             }
 
-        });
+        }, this);
     },
 
     renderClearAll: function () {
@@ -130,6 +135,7 @@ var BrandFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
         title: 'Brand',
+        panelValue: 'brand_',
         values: [{
                 value: 'ASOS',
                 id: 'brand_53'
@@ -191,6 +197,7 @@ var ColourFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
         title: 'Colour',
+        panelValue: 'base_colour_',
         values: [{
                 value: 'Yellow',
                 id: 'base_colour_1'
@@ -246,6 +253,7 @@ var SizeFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
         title: 'Size',
+        panelValue: 'size_',
         values: [{
                 value: 'UK 4',
                 id: 'size_4'
@@ -362,13 +370,13 @@ var FilterView = Backbone.View.extend({
     // },
 
     render: function () {
-        // var template = _.template()
-        this.$el.append(FilterTemplate(this.model.toJSON()))
+
+        this.$el.append(FilterTemplate(this.model.toJSON()));
 
         var values = this.model.get('values');
 
         _.each(values, function (value) {
-            this.$('.list').append('<li><input type="checkbox" id=' + value.id + '/><label for=' + value.id + '> ' + value.value + '</label></li>');
+            this.$('.list').append('<li><input type="checkbox" id=' + value.id + '><label for=' + value.id + '> ' + value.value + '</label></li>');
         }, this);
 
         return this;
@@ -390,6 +398,15 @@ var FilterView = Backbone.View.extend({
 
     clearAllChecked: function () {
         var checked = this.$el.find(':checked').attr('checked', false);
+        this.toggleClearButton();
+    },
+
+    updateFacet: function (values) {
+        _.each(values, function (value) {
+            var id = '#' + this.model.get('panelValue') + value;
+            $(id).attr('checked', true)
+        }, this);
+
         this.toggleClearButton();
     }
 
