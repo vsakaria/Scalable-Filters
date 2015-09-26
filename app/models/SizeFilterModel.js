@@ -1,6 +1,7 @@
 var SizeFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
+        title: 'Size',
         values: [{
                 value: 'UK 4',
                 id: 'size_4'

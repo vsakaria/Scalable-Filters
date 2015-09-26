@@ -2,15 +2,14 @@ var FilterTemplate = require('../templates/FilterTemplate.html');
 
 var FilterView = Backbone.View.extend({
 
-    template: _.template(FilterTemplate()),
-
     events: {
         'click .list': 'toggleClearButton',
         'click .clear-filter': 'clearAllChecked'
     },
 
     render: function () {
-        this.$el.append(this.template());
+
+        this.$el.append(FilterTemplate(this.model.toJSON()))
 
         var values = this.model.get('values');
 

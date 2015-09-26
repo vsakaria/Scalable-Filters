@@ -31,13 +31,24 @@ module.exports = function (grunt) {
                     'build/bundle.map': ['build/bundle.js']
                 }
             }
+        },
+        connect: {
+            server: {
+                options: {
+                    port: 8080,
+                    open: true,
+                    keepalive: true
+                }
+            }
         }
+
     });
 
     grunt.loadNpmTasks('grunt-contrib-jasmine');
     grunt.loadNpmTasks('grunt-browserify');
     grunt.loadNpmTasks('grunt-exorcise');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-contrib-connect');
 
     grunt.registerTask('dev', ['browserify', 'exorcise']);
 };

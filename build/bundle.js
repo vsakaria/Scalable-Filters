@@ -1,29 +1,75 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var FilterView = require('../views/FilterView.js')
-var ClearAllFiltersView =  require('../views/ClearAllFilterView.js');
+var ClearAllFiltersView = require('../views/ClearAllFilterView.js');
 
 var SizeFilterModel = require('../models/SizeFilterModel.js');
 var BrandFilterModel = require('../models/BrandFilterModel.js');
 var ColourFilterModel = require('../models/ColourFilterModel.js');
 
+var Router = require('../router/Router.js');
+
 var FilterController = {
 
     initialise: function () {
-        // I lsitened on the Backbone Global Object to keep the code DRY,
-        //I could have used Marionttee and create Channles to keep the code self contained
         Backbone.on('facet-clicked', this.renderClearAll, this);
+
+        var router = new Router();
+        router.on('route:start', this.displayViews, this);
+        Backbone.history.start();
+    },
+
+    displayViews: function (q) {
 
         this.clearAllFiltersView();
 
         this.sizeView();
         this.brandView();
         this.colourView();
+
+        if(window.location.search) {
+            this.handleQueryString();
+        }
+    },
+
+    handleQueryString: function () {
+        var refinements = location.search.slice(8).split('|');
+
+        $.each(refinements, function (i, panelData) {
+
+            var panelName = panelData.split(':')[0];
+
+            var panelValues = panelData.split(':')[1].split(',');
+
+            if (panelName == 'size') {
+                var refinementValues = $('[data-id=size] [type=checkbox]');
+
+                $.each(panelValues, function (i, val) {
+                    refinementValues.eq((val - 3) / 2).attr('checked', true).change();
+                });
+
+            } else if (panelName == 'colour') {
+                var refinementValues = $('[data-id=base_colour] [type=checkbox]');
+
+                $.each(panelValues, function (i, val) {
+                    refinementValues.eq(val).attr('checked', true).change();
+                });
+
+            } else {
+                var refinementValues = $('[data-id=brand] [type=checkbox]');
+
+                $.each(panelValues, function (i, val) {
+                    refinementValues.filter('#brand_' + val).attr('checked', true).change();
+                });
+
+            }
+
+        });
     },
 
     renderClearAll: function () {
         this.views = [this.sizeView, this.brandView, this.colourView];
 
-        var filtersState  = _.map(this.views, function (view) {
+        var filtersState = _.map(this.views, function (view) {
             return view.model.get('checkboxSelected');
         });
 
@@ -47,24 +93,34 @@ var FilterController = {
     },
 
     sizeView: function () {
-        this.sizeView = new FilterView({ model: new SizeFilterModel() });
+        this.sizeView = new FilterView({
+            model: new SizeFilterModel()
+        });
         $('[data-role="size-filter"]').append(this.sizeView.render().$el);
     },
 
     brandView: function () {
-        this.brandView = new FilterView({ model: new BrandFilterModel() });
+        this.brandView = new FilterView({
+            model: new BrandFilterModel()
+        });
         $('[data-role="brand-filter"]').append(this.brandView.render().$el);
     },
 
     colourView: function () {
-        this.colourView = new FilterView({ model: new ColourFilterModel() });
+        this.colourView = new FilterView({
+            model: new ColourFilterModel()
+        });
         $('[data-role="colour-filter"]').append(this.colourView.render().$el);
     }
 };
 
 module.exports = FilterController;
 
-},{"../models/BrandFilterModel.js":3,"../models/ColourFilterModel.js":4,"../models/SizeFilterModel.js":5,"../views/ClearAllFilterView.js":8,"../views/FilterView.js":9}],2:[function(require,module,exports){
+//?refine=size:4,10,16|colour:1,4|brand:53,3392,12767
+
+//1. Look at the connect grunt plug in
+
+},{"../models/BrandFilterModel.js":3,"../models/ColourFilterModel.js":4,"../models/SizeFilterModel.js":5,"../router/Router.js":6,"../views/ClearAllFilterView.js":9,"../views/FilterView.js":10}],2:[function(require,module,exports){
 var FilterController = require('../app/controllers/FilterController.js');
 
 FilterController.initialise();
@@ -73,6 +129,7 @@ FilterController.initialise();
 var BrandFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
+        title: 'Brand',
         values: [{
                 value: 'ASOS',
                 id: 'brand_53'
@@ -133,6 +190,7 @@ module.exports = BrandFilterModel;
 var ColourFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
+        title: 'Colour',
         values: [{
                 value: 'Yellow',
                 id: 'base_colour_1'
@@ -187,6 +245,7 @@ module.exports = ColourFilterModel;
 var SizeFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
+        title: 'Size',
         values: [{
                 value: 'UK 4',
                 id: 'size_4'
@@ -225,15 +284,26 @@ var SizeFilterModel = Backbone.Model.extend({
 module.exports = SizeFilterModel;
 
 },{}],6:[function(require,module,exports){
+var myRouter = Backbone.Router.extend({
+    routes: {
+        '': 'start'
+    }
+});
+
+module.exports = myRouter;
+
+},{}],7:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="panel" data-id="size">\n    <a href="#" class="refinement-header">\n        <h3>\n        <span class="facet-name">Size</span>\n        </h3>\n    </a>\n    <a href="#" data-clear="size" class="clear-filter">Clear</a>\n    <div class="options scrollable single-column">\n        <ul class=\'list\'>\n        </ul>\n    </div>\n</div>';
+__p+='<div class="panel" data-id="size">\n    <a href="#" class="refinement-header">\n        <h3>\n        <span class="facet-name"></span>\n        '+
+((__t=( title ))==null?'':__t)+
+'\n        </h3>\n    </a>\n    <a href="#" data-clear="size" class="clear-filter">Clear</a>\n    <div class="options scrollable single-column">\n        <ul class=\'list\'>\n        </ul>\n    </div>\n</div>';
 }
 return __p;
 };
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
@@ -242,7 +312,7 @@ __p+='<h2>REFINE BY</h2>\n<a href="#" class="clear-all-filters" data-clear="all"
 return __p;
 };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 var clearAllFiltersTemplate = require('../templates/clearAllFiltersTemplate.html');
 
 var ClearAllFiltersView = Backbone.View.extend({
@@ -274,20 +344,26 @@ var ClearAllFiltersView = Backbone.View.extend({
 module.exports = ClearAllFiltersView;
 
 
-},{"../templates/clearAllFiltersTemplate.html":7}],9:[function(require,module,exports){
+},{"../templates/clearAllFiltersTemplate.html":8}],10:[function(require,module,exports){
 var FilterTemplate = require('../templates/FilterTemplate.html');
 
 var FilterView = Backbone.View.extend({
-
-    template: _.template(FilterTemplate()),
 
     events: {
         'click .list': 'toggleClearButton',
         'click .clear-filter': 'clearAllChecked'
     },
 
+    // render: function(){
+    //  var template = _.template($('#dumb').html());
+    //     var vars = {amount:200};
+    //     var html = template(vars);
+    //     this.$el.append(html);
+    // },
+
     render: function () {
-        this.$el.append(this.template());
+        // var template = _.template()
+        this.$el.append(FilterTemplate(this.model.toJSON()))
 
         var values = this.model.get('values');
 
@@ -321,5 +397,5 @@ var FilterView = Backbone.View.extend({
 
 module.exports = FilterView;
 
-},{"../templates/FilterTemplate.html":6}]},{},[2])
+},{"../templates/FilterTemplate.html":7}]},{},[2])
 //# sourceMappingURL=bundle.map
