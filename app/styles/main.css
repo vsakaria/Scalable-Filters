@@ -1,5 +1,24 @@
+aside {
+    width: 300px;
+}
+
+.filter-title {
+    display: inline;
+}
+
+.facet-name {
+    display: inline;
+}
+
+.main-title {
+    padding-bottom: 25px;
+    border-bottom: 1px solid black;
+}
+
+
 a.clear-filter {
     visibility: hidden;
+    float:  right;
 }
 
 a.clear-filter.display {
@@ -7,9 +26,53 @@ a.clear-filter.display {
 }
 
 a.clear-all-filters {
+    float: right;
     visibility: hidden;
 }
 
 a.clear-all-filters.display {
     visibility: visible;
 }
+
+a {
+    text-decoration: none
+}
+
+ul {
+    list-style-type: none;
+}
+
+ul {
+    height: 180px;
+    width: 200px;
+}
+div.scrollable  ul {
+    overflow: hidden;
+    overflow-y: scroll;
+}
+
+
+div.stack ul {
+    width: 300px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+div.stack li {
+    line-height: 1.5em;
+    float: left;
+    display: inline;
+}
+
+div.stack li  {
+    width: 50%;
+}
+
+
+
+
+
+
+
+
+

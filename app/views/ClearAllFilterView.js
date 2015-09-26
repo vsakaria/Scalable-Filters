@@ -2,6 +2,8 @@ var clearAllFiltersTemplate = require('../templates/clearAllFiltersTemplate.html
 
 var ClearAllFiltersView = Backbone.View.extend({
 
+    className: 'main-title',
+
     template: _.template(clearAllFiltersTemplate()),
 
     events: {

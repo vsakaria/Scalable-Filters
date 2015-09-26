@@ -1,8 +1,9 @@
 var BrandFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
-        title: 'Brand',
+        title: 'BRAND',
         panelValue: 'brand_',
+        style: 'scrollable',
         values: [{
                 value: 'ASOS',
                 id: 'brand_53'

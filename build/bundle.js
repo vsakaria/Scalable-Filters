@@ -39,33 +39,11 @@ var FilterController = {
             var panelValues = panelData.split(':')[1].split(',');
 
             if (panelName == 'size') {
-
                 this.sizeView.updateFacet(panelValues);
-
-                // var refinementValues = $('[data-id=size] [type=checkbox]');
-
-                // $.each(panelValues, function (i, val) {
-                //     refinementValues.eq((val - 3) / 2).attr('checked', true).change();
-                // });
-
             } else if (panelName == 'colour') {
                 this.colourView.updateFacet(panelValues);
-
-                // var refinementValues = $('[data-id=base_colour] [type=checkbox]');
-
-                // $.each(panelValues, function (i, val) {
-                //     refinementValues.eq(val).attr('checked', true).change();
-                // });
-
             } else if (panelName === 'brand') {
                 this.brandView.updateFacet(panelValues);
-
-                // var refinementValues = $('[data-id=brand] [type=checkbox]');
-
-                // $.each(panelValues, function (i, val) {
-                //     refinementValues.filter('#brand_' + val).attr('checked', true).change();
-                // });
-
             }
 
         }, this);
@@ -121,10 +99,6 @@ var FilterController = {
 
 module.exports = FilterController;
 
-//?refine=size:4,10,16|colour:1,4|brand:53,3392,12767
-
-//1. Look at the connect grunt plug in
-
 },{"../models/BrandFilterModel.js":3,"../models/ColourFilterModel.js":4,"../models/SizeFilterModel.js":5,"../router/Router.js":6,"../views/ClearAllFilterView.js":9,"../views/FilterView.js":10}],2:[function(require,module,exports){
 var FilterController = require('../app/controllers/FilterController.js');
 
@@ -134,8 +108,9 @@ FilterController.initialise();
 var BrandFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
-        title: 'Brand',
+        title: 'BRAND',
         panelValue: 'brand_',
+        style: 'scrollable',
         values: [{
                 value: 'ASOS',
                 id: 'brand_53'
@@ -196,8 +171,9 @@ module.exports = BrandFilterModel;
 var ColourFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
-        title: 'Colour',
+        title: 'BASE COLOUR',
         panelValue: 'base_colour_',
+        style: 'stack',
         values: [{
                 value: 'Yellow',
                 id: 'base_colour_1'
@@ -252,8 +228,9 @@ module.exports = ColourFilterModel;
 var SizeFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
-        title: 'Size',
+        title: 'SIZE',
         panelValue: 'size_',
+        style: 'scrollable',
         values: [{
                 value: 'UK 4',
                 id: 'size_4'
@@ -304,9 +281,11 @@ module.exports = myRouter;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<div class="panel" data-id="size">\n    <a href="#" class="refinement-header">\n        <h3>\n        <span class="facet-name"></span>\n        '+
+__p+='<div class="panel" data-id="size">\n    <a href="#" class="refinement-header">\n        <h3 class=\'facet-name\'>\n        <span class="facet-name">'+
 ((__t=( title ))==null?'':__t)+
-'\n        </h3>\n    </a>\n    <a href="#" data-clear="size" class="clear-filter">Clear</a>\n    <div class="options scrollable single-column">\n        <ul class=\'list\'>\n        </ul>\n    </div>\n</div>';
+' </span>\n\n        </h3>\n    </a>\n    <a href="#" data-clear="size" class="clear-filter">Clear</a>\n    <div class="options '+
+((__t=( style ))==null?'':__t)+
+' single-column">\n        <ul class=\'list\'>\n        </ul>\n    </div>\n</div>';
 }
 return __p;
 };
@@ -315,7 +294,7 @@ return __p;
 module.exports = function(obj){
 var __t,__p='',__j=Array.prototype.join,print=function(){__p+=__j.call(arguments,'');};
 with(obj||{}){
-__p+='<h2>REFINE BY</h2>\n<a href="#" class="clear-all-filters" data-clear="all">Clear All</a>';
+__p+='<h2 class=\'filter-title\'>REFINE BY</h2>\n<a href="#" class="clear-all-filters" data-clear="all">Clear All</a>';
 }
 return __p;
 };
@@ -324,6 +303,8 @@ return __p;
 var clearAllFiltersTemplate = require('../templates/clearAllFiltersTemplate.html');
 
 var ClearAllFiltersView = Backbone.View.extend({
+
+    className: 'main-title',
 
     template: _.template(clearAllFiltersTemplate()),
 
@@ -362,13 +343,6 @@ var FilterView = Backbone.View.extend({
         'click .clear-filter': 'clearAllChecked'
     },
 
-    // render: function(){
-    //  var template = _.template($('#dumb').html());
-    //     var vars = {amount:200};
-    //     var html = template(vars);
-    //     this.$el.append(html);
-    // },
-
     render: function () {
 
         this.$el.append(FilterTemplate(this.model.toJSON()));
@@ -382,7 +356,8 @@ var FilterView = Backbone.View.extend({
         return this;
     },
 
-    toggleClearButton: function () {
+    toggleClearButton: function (e) {
+
         var checked = this.$el.find(':checked').length
 
         if (checked) {
@@ -396,9 +371,11 @@ var FilterView = Backbone.View.extend({
         Backbone.trigger('facet-clicked');
     },
 
-    clearAllChecked: function () {
+    clearAllChecked: function (e) {
         var checked = this.$el.find(':checked').attr('checked', false);
         this.toggleClearButton();
+
+        return false;
     },
 
     updateFacet: function (values) {

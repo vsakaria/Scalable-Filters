@@ -38,33 +38,11 @@ var FilterController = {
             var panelValues = panelData.split(':')[1].split(',');
 
             if (panelName == 'size') {
-
                 this.sizeView.updateFacet(panelValues);
-
-                // var refinementValues = $('[data-id=size] [type=checkbox]');
-
-                // $.each(panelValues, function (i, val) {
-                //     refinementValues.eq((val - 3) / 2).attr('checked', true).change();
-                // });
-
             } else if (panelName == 'colour') {
                 this.colourView.updateFacet(panelValues);
-
-                // var refinementValues = $('[data-id=base_colour] [type=checkbox]');
-
-                // $.each(panelValues, function (i, val) {
-                //     refinementValues.eq(val).attr('checked', true).change();
-                // });
-
             } else if (panelName === 'brand') {
                 this.brandView.updateFacet(panelValues);
-
-                // var refinementValues = $('[data-id=brand] [type=checkbox]');
-
-                // $.each(panelValues, function (i, val) {
-                //     refinementValues.filter('#brand_' + val).attr('checked', true).change();
-                // });
-
             }
 
         }, this);
@@ -119,7 +97,3 @@ var FilterController = {
 };
 
 module.exports = FilterController;
-
-//?refine=size:4,10,16|colour:1,4|brand:53,3392,12767
-
-//1. Look at the connect grunt plug in

@@ -7,13 +7,6 @@ var FilterView = Backbone.View.extend({
         'click .clear-filter': 'clearAllChecked'
     },
 
-    // render: function(){
-    //  var template = _.template($('#dumb').html());
-    //     var vars = {amount:200};
-    //     var html = template(vars);
-    //     this.$el.append(html);
-    // },
-
     render: function () {
 
         this.$el.append(FilterTemplate(this.model.toJSON()));
@@ -27,7 +20,8 @@ var FilterView = Backbone.View.extend({
         return this;
     },
 
-    toggleClearButton: function () {
+    toggleClearButton: function (e) {
+
         var checked = this.$el.find(':checked').length
 
         if (checked) {
@@ -41,9 +35,11 @@ var FilterView = Backbone.View.extend({
         Backbone.trigger('facet-clicked');
     },
 
-    clearAllChecked: function () {
+    clearAllChecked: function (e) {
         var checked = this.$el.find(':checked').attr('checked', false);
         this.toggleClearButton();
+
+        return false;
     },
 
     updateFacet: function (values) {

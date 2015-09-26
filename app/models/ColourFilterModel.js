@@ -1,8 +1,9 @@
 var ColourFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
-        title: 'Colour',
+        title: 'BASE COLOUR',
         panelValue: 'base_colour_',
+        style: 'stack',
         values: [{
                 value: 'Yellow',
                 id: 'base_colour_1'

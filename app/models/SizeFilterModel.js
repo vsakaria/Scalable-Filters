@@ -1,8 +1,9 @@
 var SizeFilterModel = Backbone.Model.extend({
     defaults: {
         'checkboxSelected': false,
-        title: 'Size',
+        title: 'SIZE',
         panelValue: 'size_',
+        style: 'scrollable',
         values: [{
                 value: 'UK 4',
                 id: 'size_4'
